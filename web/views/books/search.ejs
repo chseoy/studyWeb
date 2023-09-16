@@ -1,14 +1,28 @@
 <div class="row my-5">
     <div class="col">
+        <!-- 검색 기능 -->
+        <div class = "row mb-3 justify-content-end"> <!-- 글자가 아니라 전체를 오른쪽으로 옮기기 위해 justify -->
+            <form name = "frm" class = "col-6 col-md-4 col-lg-3">
+                <div class = "input-group">
+                    <input name = "query" class = "form-control" value="">
+                    <button class = "btn btn-primary">검색</button>
+                </div>
+            </form>
+        </div>
         <h1 class="text-center">도서검색</h1>
-        <div id="div_books">
-
+        <div id="div_books"> <!-- 실제 출력하는 곳 -->
+        </div>
+        <!-- 페이지 이동 -->
+        <div class="text-center">
+            <button id = "prev" class="btn btn-primary">이전</button>
+            <span id = "span_page" class="mx-3">1/10</span>
+            <button id = "next" class="btn btn-primary">다음</button>
         </div>
     </div>
 </div>
 <script type="x-handlebars-template" id="temp_books">
     <table class="table">
-        {{#each documents}}
+        {{#each documents}} <!-- 템플릿 -->
             <tr>
                 <td><img src="{{thumbnail}}" width="50"></td>
                 <td><a href="{{url}}">{{title}}</a></td>
@@ -18,7 +32,29 @@
         {{/each}}
     </table>
 </script>
+
 <script>
+    let query = $(frm.query).val();
+    let page = 1;
+
+    $(frm).on("submit", function (e) {
+        e.preventDefault();
+        query = $(frm.query).val();
+        getBooks();
+    });
+
+    // 다음 버튼
+    $("#next").on("click", function () {
+        page++;
+        getBooks();
+    });
+
+    // 이전 버튼
+    $("#prev").on("click", function () {
+        page--;
+        getBooks();
+    });
+
     getBooks();
     // 도서검색 데이터 불러오기
     function getBooks() {
@@ -26,11 +62,19 @@
             type:"get",
             url:"https://dapi.kakao.com/v3/search/book?target=title",
             headers:{"Authorization":"KakaoAK 3b06b87b5ecf6eb05c3de92d42cad9e8"},
-            data:{query:"자바", page:1, size:5}, // 자바 관련한 책의 1페이지부터 5권을 보여줌
+            data:{query:query, page:page, size:5},
             success:function (data){
                 // console.log(data);
                 let temp = Handlebars.compile($("#temp_books").html());
                 $("#div_books").html(temp(data));
+
+                let last = Math.ceil(data.meta.pageable_count / 5)
+                $("#span_page").html(page + "/" + last);
+
+                if(page==1) $("#prev").attr("disabled", true);
+                else $("#prev").attr("disabled", false);
+                if(data.meta.is_end) $("#next").attr("disabled", true);
+                else $("#next").attr("disabled", false);
             }
         })
     }
