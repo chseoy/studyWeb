@@ -65,19 +65,19 @@
             type: "GET",
             url: "https://dapi.kakao.com/v2/local/search/keyword.json",
             headers: {"Authorization":"KakaoAK 3b06b87b5ecf6eb05c3de92d42cad9e8"},
-            data: {page:page, query:query, size:5},
+            data: {query:query, page:page, size:5},
             success: function (data) {
                 // console.log(data);
                 let temp=Handlebars.compile($("#temp_locals").html());
                 $("#div_locals").html(temp(data));
 
-                let last = Math.ceil(result.meta.pageable_count / 5)
+                let last = Math.ceil(data.meta.pageable_count / 5)
                 $("#span_page").html(page + "/" + last);
 
                 // 페이지가 첫페이지 일 때와 마지막 페이지 일 때
                 if(page==1) $("#prev").attr("disabled", true);
                 else $("#prev").attr("disabled", false);
-                if(result.meta.is_end) $("#next").attr("disabled", true);
+                if(data.meta.is_end) $("#next").attr("disabled", true);
                 else $("#next").attr("disabled", false);
             }
         });

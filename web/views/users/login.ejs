@@ -1,0 +1,67 @@
+<!-- 로그인, 비밀번호 인풋박스 안에 있는 스팬 크기 같게 하려고 설정-->
+<style>
+    form span {
+        width:90px;
+    }
+</style>
+
+<div class="row my-5 justify-content-center">
+    <div class="col-6"> <!-- row안에는 col, col은 12개까지 생성가능-->
+        <h1 class="text-center">로그인</h1>
+
+        <!-- 입력 태그를 넣기 위한 폼 -->
+        <form name="frm" class="card p-3"> <!--패딩은 위아래좌우 여백 다 줌-->
+            <div class="input-group mb-3">
+                <span class="input-group-text">이메일</span>
+                <input name="email" class="form-control" value="inha@test.com">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">비밀번호</span>
+                <input name="password" class="form-control" type="password" value="12341234">
+            </div>
+            <button class="btn btn-primary w-100">로그인</button>
+        </form>
+        <div class="text-end mt-2">
+            <a href="/users/join">회원가입</a>
+        </div>
+    </div>
+</div>
+
+<!-- 이벤트 처리는 스크립트로! -->
+<script type="module">
+    // 로그인 유효성 체크 사전 작업
+    import { app } from '/javascripts/firebaseInit.js';
+    import { getAuth, signInWithEmailAndPassword }
+        from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+    const auth = getAuth(app);
+
+    $(frm).on("submit", function (e) { // id로 주어졌을 때에는 "#frm" / name은 뭐 없음
+        e.preventDefault();
+
+        const email = $(frm.email).val();
+        const password = $(frm.password).val();
+        // alert(email+password);
+
+        // 유효성 체크
+        if(email=="") {
+            alert("이메일을 입력하세요.")
+            $(frm.email).focus(); // 이메일창으로 커서가 다시 가도록
+        }else if(password=="") {
+            alert("비밀번호를 입력하세요.")
+            $(frm.password).focus(); // 이메일창으로 커서가 다시 가도록
+        }else {
+            // 로그인 체크
+            signInWithEmailAndPassword(auth, email, password).then(success => {
+                console.log(success);
+                // 로그인 성공했을 경우
+                sessionStorage.setItem("email", email); // 로그인 정보 저장
+                sessionStorage.setItem("uid", success.user.uid);
+                alert("로그인에 성공하였습니다.");
+                location.href="/"; // 로그인 된 후 계속 로그인 페이지에 있으면 안되니까 페이지 이동
+            }).catch(error => {
+                // console.log(error);
+                alert(error.message);
+            });
+        }
+    });
+</script>
