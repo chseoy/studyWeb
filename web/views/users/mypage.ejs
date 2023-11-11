@@ -1,0 +1,148 @@
+<!-- 10주차 마이페이지 -->
+<!-- 프로필 이미지 스타일 -->
+<style>
+    #photo {
+        width: 200px;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 1px solid rgb(128, 128, 128);
+    }
+    #file {
+        display: none;
+    }
+</style>
+
+<div class="my-5">
+    <h1 class="text-center mb-5">마이페이지</h1>
+    <div class="row justify-content-center">
+        <div class="col-8">
+            <!-- 화면에 이미지 삽입-->
+            <div class="text-center mb-5">
+                <img src="https://via.placeholder.com/200x200" id="photo">
+                <!-- 이미지 변경 -->
+                <input type="file" id="file">
+
+                <!--  -->
+                <div>
+                    <button id="btn-photo" class="btn btn-primary px-5 mt-3">이미지 저장</button>
+                </div>
+            </div>
+
+            <!-- 화면에 폼 삽입 -->
+            <form name="frm" class="card p-3">
+                <div class="input-group mb-2">
+                    <span class="input-group-text">이름</span>
+                    <input name="name" class="form-control"/>
+                </div>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">전화</span>
+                    <input name="phone" class="form-control"/>
+                </div>
+                <div class="input-group mb-2">
+                    <span class="input-group-text">주소</span>
+                    <input name="address" class="form-control" readonly/> <!-- readonly는 사용자가 텍스트를 입력할 수 없게 함-->
+                    <button id="btn-search" type="button" class = "btn btn-primary">검색</button> <!-- sumbit 버튼으로 초기 설정 되므로 타입을 버튼으로-->
+                </div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-primary px-5">저장</button>
+                    <button type="reset" class="btn btn-secondary px-5">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { app } from "/javascripts/firebaseInit.js";
+    import { getFirestore, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-firestore.js";
+    import { getStorage,uploadBytes,ref,getDownloadURL } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-storage.js";
+    const db = getFirestore(app);
+    const uid = sessionStorage.getItem("uid");
+    const email = sessionStorage.getItem("email");
+    const storage = getStorage(app);
+
+    // 프로필 이미지 변경 했을 때 이벤트
+    $("#photo").on("click", function () {
+        $("#file").click();
+    });
+
+    $("#file").on("change", function (e) {
+        $("#photo").attr("src", URL.createObjectURL(e.target.files[0]));
+    });
+
+    // btn-photo(이미지 저장 버튼)를 클릭했을 때 이벤트
+    $("#btn-photo").on("click", async function() {
+        if($("#file").val() == "") {
+            alert("저장할 사진을 선택하세요.");
+        } else {
+            if(confirm("선택한 이미지를 저장합니다.")) {
+                // save image
+                const snapshot = await uploadBytes(ref(storage, `/photo/${Date.now()}.jpg`), $("#file")[0].files[0]);
+                const url = await getDownloadURL(snapshot.ref);
+                await setDoc(doc(db, `users/${uid}`), {...user, photo:url});
+                alert("이미지가 변경되었습니다.");
+            }
+        }
+    });
+
+    // 마이페이지가 열렸을 때, 데이터를 폼에 넣어 주는 이벤트
+    let user;
+    $(window).on("load", async function () {
+        const snapshot = await getDoc(doc(db, `users/${uid}`)); // ``를 하는 이유 -> 문자랑 숫자 다 가져와서?
+
+        if (snapshot.data()) { // 유저 정보가 있을 때에만 user 변수에 데이터를 넣음
+            user = snapshot.data();
+            $(frm.name).val(user.name);
+            $(frm.phone).val(user.phone);
+            $(frm.address).val(user.address);
+            $("#photo").attr("src", user.photo);
+        }
+    });
+
+    // 저장 버튼 눌렀을 때의 이벤트 (폼에 타입을 설정하지 않았으니 눌렀을 시 섬밋 발생)
+    $(frm).on("submit", async function (e) {
+        e.preventDefault();
+        const name = $(frm.name).val();
+        const phone = $(frm.phone).val();
+        const address = $(frm.address).val();
+
+        // 유효성 검사
+        if (name == "") {
+            alert("이름을 입력하세요.");
+            $(frm.name).focus();
+            return;
+        }
+        if (phone == "") {
+            alert("전화번호를 입력하세요.");
+            $(frm.phone).focus();
+            return;
+        }
+        if (address == "") {
+            alert("주소를 입력하세요.");
+            return;
+        }
+
+        if(confirm("사용자 정보를 수정 하시겠습니까?")) {
+            await setDoc(doc(db, `users/${uid}`), {
+                ...user,
+                name: name,
+                phone: phone,
+                address: address
+            });
+            alert("사용자 정보가 변경되었습니다.");
+            location.href="/";
+        }
+    });
+
+    // 포스트코드 창 띄우기
+    $("#btn-search").on("click", function () {
+        new daum.Postcode({
+            oncomplete:function (data) {// 클릭한 변수를 data에 삽입
+                // console.log(data);
+                const address = data.roadAddress;
+                const building = data.buildingName ? `(${data.buildingName})` : ''; // 사망 연산자로, 빌딩 네임이 있으면 넣고, 없으면 빈칸
+                $(frm.address).val(address + building); // 포스트 창에서 선택한 것의 주소를 인풋 박스에 나타냄
+            }
+        }).open();
+    });
+</script>

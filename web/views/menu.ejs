@@ -13,6 +13,18 @@
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/locals">지역검색</a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="/posts">게시판</a>
+                </li>
+
+                <li class="nav-item" id="cart" style="display: none">
+                    <a class="nav-link active" aria-current="page" href="/books/cart">장바구니</a>
+                </li>
+
+                <li class="nav-item" id="favorite" style="display: none">
+                    <a class="nav-link active" aria-current="page" href="/locals/favorite">즐겨찾기</a>
+                </li>
             </ul>
 
             <ul class="navbar-nav d-flex">
@@ -33,7 +45,7 @@
 <!--로그인 여부 확인해서 메뉴 탭 바뀌게 설정-->
 <script>
     if(sessionStorage.getItem("email")){
-        $("#login, #email, #logout").toggle(); // toggle 보이는건 안보이게, 안보이는건 보이게 하는 함수
+        $("#login, #email, #logout, #cart, #favorite").toggle(); // toggle 보이는건 안보이게, 안보이는건 보이게 하는 함수
         $("#email a").html(sessionStorage.getItem("email"));
     }
 

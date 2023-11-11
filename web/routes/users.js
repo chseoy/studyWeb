@@ -15,4 +15,10 @@ router.get('/login', function (req, res) {
 router.get('/join', function (req, res) {
   res.render('index', {title:'회원가입', pageName:'users/join.ejs'}) // 페이지 이동 (pageName 이름은 login.ejs에 선언된 거랑 같아야함.)
 });
+
+// 마이페이지
+router.get('/mypage', function(req, res, next) {
+  res.render("index", { title : '마이페이지', pageName: 'users/mypage.ejs'});
+});
+
 module.exports = router;

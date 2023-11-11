@@ -29,10 +29,9 @@
 
 <!-- 이벤트 처리는 스크립트로! -->
 <script type="module">
-    // 로그인 유효성 체크 사전 작업
-    import { app } from '/javascripts/firebaseInit.js';
-    import { getAuth, signInWithEmailAndPassword }
-        from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
+
+    import { app } from "/javascripts/firebaseInit.js";
+    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
     const auth = getAuth(app);
 
     $(frm).on("submit", function (e) { // id로 주어졌을 때에는 "#frm" / name은 뭐 없음

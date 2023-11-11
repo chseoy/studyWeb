@@ -13,7 +13,7 @@
         <!-- 검색 기능 -->
         <div class = "row mb-3 justify-content-end"> <!-- 글자가 아니라 전체를 오른쪽으로 옮기기 위해 justify -->
             <form name = "frm" class = "col-6 col-md-4 col-lg-3">
-                <div class = "input-group">
+                <div class = "input-group my-3">
                     <input name = "query" class = "form-control" value="java">
                     <button class = "btn btn-primary">검색</button>
                 </div>
@@ -22,7 +22,7 @@
         <!-- 검색결과 출력 -->
         <div id = "div_books" class = "row"></div>
         <!-- 페이지 이동 -->
-        <div class="text-center">
+        <div class="text-center my-5">
             <button id = "prev" class="btn btn-primary">이전</button>
             <span id = "span_page" class="mx-3">1/10</span>
             <button id = "next" class="btn btn-primary">다음</button>
@@ -36,7 +36,7 @@
             <div class = "card">
                 <div class="card-body">
 <!--                    <a href="{{url}}">{{images}}-->
-                        <img src="{{chkImage thumbnail}}" width="90%" index="{{@index}}"> <!-- modal 사용으로 인덱스값 넣어줌-->
+                        <img src="{{chkImage thumbnail}}" width="90%" index="{{@index}}"> <!-- modal 사용으로 인덱스값 넣어줌 -->
 <!--                    </a>-->
                     <div class="ellipsis text-center">{{title}}</div>
                 </div>
@@ -85,7 +85,7 @@
             location.href="/users/login"
         } else {
             // 장바구니에 상품정보 저장
-            const book = JSON.parse($(this).attr("book"));
+            const book = JSON.parse($(this).attr("book")); // 스트링을 오브젝트로 바꾸어줌 JSON.parse
             console.log(book);
             const ref_book = `cart/${sessionStorage.getItem("uid")}/${book.isbn};`// = "/cart/" + sessionStorage.getItem("uid") + "book.isbn"
 

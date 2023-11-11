@@ -1,19 +1,20 @@
 <div class="row my-5">
     <div class="col">
         <!-- 검색 기능 -->
+        <h1 class="text-center">도서검색</h1>
         <div class = "row mb-3 justify-content-end"> <!-- 글자가 아니라 전체를 오른쪽으로 옮기기 위해 justify -->
             <form name = "frm" class = "col-6 col-md-4 col-lg-3">
-                <div class = "input-group">
+                <div class = "input-group mb-5">
                     <input name = "query" class = "form-control" value="java">
                     <button class = "btn btn-primary">검색</button>
                 </div>
             </form>
         </div>
-        <h1 class="text-center">도서검색</h1>
+
         <div id="div_books"> <!-- 실제 출력하는 곳 -->
         </div>
         <!-- 페이지 이동 -->
-        <div class="text-center">
+        <div class="text-center my-5">
             <button id = "prev" class="btn btn-primary">이전</button>
             <span id = "span_page" class="mx-3">1/10</span>
             <button id = "next" class="btn btn-primary">다음</button>
